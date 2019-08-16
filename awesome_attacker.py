@@ -9,7 +9,7 @@
 # Split into defender and attacker
 # no random food target
 
-TEAM_NAME = 'Basic Attacker Bots'
+TEAM_NAME = 'Awesome Attacker Bots'
 
 
 import networkx
@@ -38,13 +38,13 @@ def move(bot, state):
     # choose a target food pellet if we still don't have one or
     # if the old target has been already eaten
     location_food = enemy[0].food
+    maze = state['graph']
+    current_position = bot.position
     if (target is None) or (target not in location_food):
         # position of the target food pellet
         target = bot.random.choice(location_food)
         # use networkx to get the shortest path from here to the target
         # we do not use the first position, which is always equal to bot_position
-        maze = state['graph']
-        current_position = bot.position
         path = get_shortest_path(maze, current_position, target)
         state[currently_active_bot] = (target, path)
 
@@ -55,8 +55,10 @@ def move(bot, state):
         # get a list of safe positions
         safe_positions = []
         for pos in bot.legal_positions:
-            if pos not in (enemy[0].position, enemy[1].position):
+            if pos not in (enemy[0].position, enemy[1].position,current_position):
                 safe_positions.append(pos)
+        if len(safe_positions) is 0:
+            safe_positions.append(current_position)
 
         # we are about to step on top of an enemy
         if next_pos not in safe_positions:
